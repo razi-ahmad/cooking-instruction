@@ -1,0 +1,4 @@
+server:
+  servlet:
+  context-path: /recipe
+  port: 9005

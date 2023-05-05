@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  cooking-instruction:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    labels:
+      container-name: cooking-instruction
+    ports:
+      - "9005:9005"
