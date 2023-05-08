@@ -38,7 +38,7 @@ Run Project
 
 Open the swagger interface in the browser
 
-* http://localhost:8080/recipe/swagger-ui/index.html
+* http://localhost:9005/recipe/swagger-ui/index.html
 
 -----------------------------------------
 
