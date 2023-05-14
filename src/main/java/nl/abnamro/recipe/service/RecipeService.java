@@ -3,7 +3,7 @@ package nl.abnamro.recipe.service;
 import lombok.extern.slf4j.Slf4j;
 import nl.abnamro.recipe.dto.RecipeRequest;
 import nl.abnamro.recipe.dto.RecipeResponse;
-import nl.abnamro.recipe.eception.NotFoundException;
+import nl.abnamro.recipe.exception.NotFoundException;
 import nl.abnamro.recipe.model.IngredientModel;
 import nl.abnamro.recipe.model.RecipeModel;
 import nl.abnamro.recipe.repository.RecipeRepository;

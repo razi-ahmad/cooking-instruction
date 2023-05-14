@@ -1,4 +1,4 @@
-package nl.abnamro.recipe.eception;
+package nl.abnamro.recipe.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

@@ -2,7 +2,7 @@ package nl.abnamro.recipe.unit.service;
 
 import nl.abnamro.recipe.dto.IngredientRequest;
 import nl.abnamro.recipe.dto.IngredientResponse;
-import nl.abnamro.recipe.eception.NotFoundException;
+import nl.abnamro.recipe.exception.NotFoundException;
 import nl.abnamro.recipe.model.IngredientModel;
 import nl.abnamro.recipe.repository.IngredientRepository;
 import nl.abnamro.recipe.service.IngredientService;

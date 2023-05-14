@@ -1,4 +1,4 @@
-package nl.abnamro.recipe.eception;
+package nl.abnamro.recipe.exception;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
