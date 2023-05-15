@@ -130,7 +130,7 @@ public class RecipeControllerTest extends BaseControllerTest {
 
     @Test
     public void test_search_recipe_by_criteria_successfully() throws Exception {
-        IngredientModel ingredientModel = createIngredient("salt");
+        IngredientModel ingredientModel = createIngredient();
         IngredientModel ingredientEntity = ingredientRepository.save(ingredientModel);
 
         RecipeRequest recipeRequest = new RecipeRequest("pasta", "past instruction",
@@ -160,43 +160,17 @@ public class RecipeControllerTest extends BaseControllerTest {
         Assert.assertEquals(listRecipeList.get(0).getInstruction(), optionalRecipe.get().getInstruction());
     }
 
-    //@Test
-    public void test_SearchRecipeByCriteria_fails() throws Exception {
-        performPost(BASE_PATH + "/filter", null)
+    @Test
+    public void test_search_recipe_by_criteria_fails() throws Exception {
+        performGet(BASE_PATH + "/filter")
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.message").exists())
                 .andReturn();
     }
 
-    static List<IngredientModel> createIngredientList(boolean withId) {
-        IngredientModel model1 = IngredientModel
-                .builder()
-                .id(withId ? 10 : null)
-                .name("tomato")
-                .build();
-
-        IngredientModel model2 = IngredientModel.builder()
-                .id(withId ? 11 : null)
-                .name("cabbage")
-                .build();
-
-        return List.of(model1, model2);
-    }
-
-    static IngredientModel createIngredient(String name) {
+    static IngredientModel createIngredient() {
         return IngredientModel.builder()
-                .name(name)
+                .name("salt")
                 .build();
-    }
-
-    static RecipeModel createRecipe(Integer id) {
-        return RecipeModel
-                .builder()
-                .id(id)
-                .name("pasta")
-                .category(Category.VEGAN)
-                .instruction("someInstruction").build();
-
     }
 
     static RecipeModel createRecipe() {
