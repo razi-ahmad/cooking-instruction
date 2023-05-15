@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import nl.abnamro.recipe.dto.IngredientRequest;
 import nl.abnamro.recipe.dto.IngredientResponse;
-import nl.abnamro.recipe.dto.RecipeResponse;
 import nl.abnamro.recipe.exception.NotFoundException;
 import nl.abnamro.recipe.service.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,7 +8,6 @@ import nl.abnamro.recipe.model.IngredientModel;
 import nl.abnamro.recipe.model.RecipeModel;
 import nl.abnamro.recipe.repository.IngredientRepository;
 import nl.abnamro.recipe.repository.RecipeRepository;
-import nl.abnamro.recipe.service.ISearchRecipeService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
