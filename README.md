@@ -47,3 +47,15 @@ Run test cases
   ```bash
   mvn clean test
   ```
+
+-----------------------------------------
+## Solution
+The database H2 is used for fast response, it can be changed to any other relational database. 
+The application is scalable to full fill the requests, in that case need to use external database instead of in memory.
+
+
+## Area to improve
+- Validations need to add to perform checks before saving data
+- API Documentation need to update
+- More test cases can be added
+
