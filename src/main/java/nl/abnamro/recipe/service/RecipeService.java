@@ -1,6 +1,7 @@
 package nl.abnamro.recipe.service;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.abnamro.recipe.dto.FilterRequest;
 import nl.abnamro.recipe.dto.RecipeRequest;
 import nl.abnamro.recipe.dto.RecipeResponse;
 import nl.abnamro.recipe.exception.NotFoundException;
@@ -22,12 +23,14 @@ public class RecipeService implements IRecipeService {
 
     private final RecipeRepository repository;
     private final IngredientService ingredientService;
+    private final ISearchRecipeService searchService;
 
 
     @Autowired
-    RecipeService(RecipeRepository repository, IngredientService ingredientService) {
+    RecipeService(RecipeRepository repository, IngredientService ingredientService, ISearchRecipeService searchService) {
         this.repository = repository;
         this.ingredientService = ingredientService;
+        this.searchService = searchService;
     }
 
     @Override
@@ -37,13 +40,7 @@ public class RecipeService implements IRecipeService {
 
     @Override
     public RecipeResponse update(Integer id, RecipeRequest request) {
-        RecipeModel model;
-        try {
-            model = fetchById(id);
-        } catch (NotFoundException ex) {
-            log.warn("Recipe not found by id: {}", id);
-            return create(request);
-        }
+        RecipeModel model = fetchById(id);
         model.setName(request.getName());
         model.setInstruction(request.getInstruction());
         model.setCategory(request.getCategory());
@@ -67,6 +64,10 @@ public class RecipeService implements IRecipeService {
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Recipe not found"))
         );
+    }
+
+    public List<RecipeResponse> listFiltered(List<FilterRequest> request, String joinType, int page, int limit) {
+        return map(searchService.searchRecipe(request, joinType, page, limit));
     }
 
     private RecipeModel fetchById(Integer id) {

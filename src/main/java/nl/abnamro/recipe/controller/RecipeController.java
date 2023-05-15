@@ -7,11 +7,15 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import nl.abnamro.recipe.dto.FilterRequest;
 import nl.abnamro.recipe.dto.RecipeRequest;
 import nl.abnamro.recipe.dto.RecipeResponse;
+import nl.abnamro.recipe.exception.NotFoundException;
 import nl.abnamro.recipe.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -53,11 +57,11 @@ public class RecipeController {
             )
     })
     @PostMapping
-    public RecipeResponse creatRecipe(@Valid @RequestBody RecipeRequest request) {
+    public ResponseEntity<RecipeResponse> creatRecipe(@Valid @RequestBody RecipeRequest request) {
         log.info("creatRecipe: {} >>>> started", request);
         RecipeResponse response = service.create(request);
         log.info("creatRecipe: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(summary = "The endpoint update recipe if exist otherwise create")
@@ -83,12 +87,19 @@ public class RecipeController {
                     )
             )
     })
-    @PutMapping
-    public RecipeResponse updateRecipe(@PathVariable(name = "id") Integer id, @Valid @RequestBody RecipeRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<RecipeResponse> updateRecipe(@PathVariable(name = "id") Integer id, @Valid @RequestBody RecipeRequest request) {
         log.info("updateRecipe with id{}:  >>>> started", id);
+        try {
+            service.getById(id);
+        } catch (NotFoundException ex) {
+            log.warn("Recipe not found by id: {}", id);
+            return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
+        }
+
         RecipeResponse response = service.update(id, request);
         log.info("updateRecipe: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "The endpoint delete the recipe by id")
@@ -114,10 +125,11 @@ public class RecipeController {
             )
     })
     @DeleteMapping("/{id}")
-    public void deleteRecipe(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<Object> deleteRecipe(@PathVariable(name = "id") Integer id) {
         log.info("deleteRecipe with id{}:  >>>> started", id);
         service.delete(id);
         log.info("deleteRecipe:  >>>> finished");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "The endpoint return the recipe by id")
@@ -137,11 +149,11 @@ public class RecipeController {
             )
     })
     @GetMapping("/{id}")
-    public RecipeResponse getRecipe(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<RecipeResponse> getRecipe(@PathVariable(name = "id") Integer id) {
         log.info("getRecipe with id{}:  >>>> started", id);
         RecipeResponse response = service.getById(id);
         log.info("getRecipe: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "The endpoint return the list of recipe by paging")
@@ -159,12 +171,21 @@ public class RecipeController {
             )
     })
     @GetMapping
-    public List<RecipeResponse> getRecipes(@RequestParam(value = "page", required = false) @Valid Integer page,
-                                           @RequestParam(value = "limit", required = false) @Valid Integer limit) {
+    public ResponseEntity<List<RecipeResponse>> getRecipes(@RequestParam(value = "page", required = false) @Valid Integer page,
+                                                           @RequestParam(value = "limit", required = false) @Valid Integer limit) {
         log.info("getRecipes page{}, limit{}:  >>>> started", page, limit);
         List<RecipeResponse> response = service.list(page, limit);
         log.info("getRecipes :  >>>> finished");
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<RecipeResponse>> getFilteredRecipes(@RequestBody List<FilterRequest> request, @RequestParam(value = "page", required = true) @Valid Integer page,
+                                                                   @RequestParam(value = "limit", required = true) @Valid Integer limit) {
+        log.info("getFilteredRecipes page{}, limit{}:  >>>> started", page, limit);
+        List<RecipeResponse> response = service.listFiltered(request, null, page, limit);
+        log.info("getFilteredRecipes :  >>>> finished");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
