@@ -58,16 +58,14 @@ class IngredientServiceTest {
     }
 
     @Test
-    void test_update_create_when_not_found_ingredient_successful() {
+    void test_update_when_not_found_ingredient() {
         IngredientRequest request = getIngredientRequest("Potato");
         IngredientModel model = getIngredientModel(request.getName());
 
-        Mockito.when(repository.save(ArgumentMatchers.any(IngredientModel.class))).thenReturn(model);
         Mockito.when(repository.findById(1)).thenReturn(Optional.empty());
 
-        IngredientResponse result = underTest.update(model.getId(), request);
-        Assertions.assertThat(result.getId()).isSameAs(model.getId());
-        Assertions.assertThat(result.getName()).isSameAs(request.getName());
+        org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> underTest.update(model.getId(), request));
+
     }
 
     @Test

@@ -66,17 +66,14 @@ class RecipeServiceTest {
 
 
     @Test
-    void test_update_create_when_not_found_recipe_successful() {
+    void test_update_when_not_found_recipe() {
         RecipeRequest request = getRecipeRequest(List.of(1));
         RecipeModel model = getRecipeModel(List.of(IngredientModel.builder().id(1).build()));
 
-        Mockito.when(repository.save(ArgumentMatchers.any(RecipeModel.class))).thenReturn(model);
-        Mockito.when(ingredientService.getIngredientsByIds(request.getIngredientIds())).thenReturn(model.getIngredients());
         Mockito.when(repository.findById(1)).thenReturn(Optional.empty());
 
-        RecipeResponse result = underTest.update(model.getId(), request);
-        Assertions.assertThat(result.getId()).isSameAs(model.getId());
-        Assertions.assertThat(result.getName()).isSameAs(request.getName());
+        org.junit.jupiter.api.Assertions.assertThrows(NotFoundException.class, () -> underTest.update(model.getId(), request));
+
     }
 
     @Test
