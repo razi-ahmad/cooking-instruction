@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,13 +30,8 @@ public class IngredientService implements IIngredientService {
     }
 
     public IngredientResponse update(Integer id, IngredientRequest request) {
-        IngredientModel model;
-        try {
-            model = fetchById(id);
-        } catch (NotFoundException exception) {
-            log.warn("Ingredient not found by id : {}", id);
-            return create(request);
-        }
+        IngredientModel model = fetchById(id);
+
         model.setName(request.getName());
         return map(repository.save(model));
     }
@@ -72,10 +68,14 @@ public class IngredientService implements IIngredientService {
     }
 
     public List<IngredientResponse> map(List<IngredientModel> ingredients) {
-        return ingredients
-                .stream()
-                .map(this::map)
-                .collect(Collectors.toList());
+        return Optional
+                .ofNullable(ingredients)
+                .map(i -> i.stream()
+                        .map(this::map)
+                        .collect(Collectors
+                                .toList())
+                )
+                .orElse(null);
     }
 
     private IngredientResponse map(IngredientModel ingredient) {

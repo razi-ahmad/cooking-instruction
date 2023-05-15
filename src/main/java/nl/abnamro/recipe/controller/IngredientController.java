@@ -9,9 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import nl.abnamro.recipe.dto.IngredientRequest;
 import nl.abnamro.recipe.dto.IngredientResponse;
+import nl.abnamro.recipe.dto.RecipeResponse;
+import nl.abnamro.recipe.exception.NotFoundException;
 import nl.abnamro.recipe.service.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -53,11 +57,11 @@ public class IngredientController {
             )
     })
     @PostMapping
-    public IngredientResponse creatIngredient(@Valid @RequestBody IngredientRequest request) {
+    public ResponseEntity<IngredientResponse> creatIngredient(@Valid @RequestBody IngredientRequest request) {
         log.info("creatIngredient: {} >>>> started", request);
         IngredientResponse response = service.create(request);
         log.info("creatIngredient: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(summary = "The endpoint update ingredient if exist otherwise create")
@@ -84,12 +88,18 @@ public class IngredientController {
             )
     })
     @PutMapping("/{id}")
-    public IngredientResponse updateIngredient(@PathVariable(name = "id") Integer id,
-                                               @Valid @RequestBody IngredientRequest request) {
+    public ResponseEntity<IngredientResponse> updateIngredient(@PathVariable(name = "id") Integer id, @Valid @RequestBody IngredientRequest request) {
+        try {
+            service.getById(id);
+        } catch (NotFoundException exception) {
+            log.warn("Ingredient not found by id : {}", id);
+            return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
+        }
+
         log.info("updateIngredient with id{}:  >>>> started", id);
         IngredientResponse response = service.update(id, request);
         log.info("updateIngredient: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "The endpoint delete the ingredient by id")
@@ -115,10 +125,11 @@ public class IngredientController {
             )
     })
     @DeleteMapping("/{id}")
-    public void deleteIngredient(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<Object> deleteIngredient(@PathVariable(name = "id") Integer id) {
         log.info("deleteIngredient with id{}:  >>>> started", id);
         service.delete(id);
         log.info("deleteIngredient:  >>>> finished");
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "The endpoint return the ingredient by id")
@@ -138,11 +149,11 @@ public class IngredientController {
             )
     })
     @GetMapping("/{id}")
-    public IngredientResponse getIngredient(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<IngredientResponse> getIngredient(@PathVariable(name = "id") Integer id) {
         log.info("getIngredient with id{}:  >>>> started", id);
         IngredientResponse response = service.getById(id);
         log.info("getIngredient: {} >>>> finished", response);
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "The endpoint return the list of ingredient by paging")
@@ -160,11 +171,11 @@ public class IngredientController {
             )
     })
     @GetMapping
-    public List<IngredientResponse> getIngredients(@RequestParam(value = "page", required = false) @Valid Integer page,
+    public ResponseEntity<List<IngredientResponse>> getIngredients(@RequestParam(value = "page", required = false) @Valid Integer page,
                                                    @RequestParam(value = "limit", required = false) @Valid Integer limit) {
         log.info("getIngredients page{}, limit{}:  >>>> started", page, limit);
         List<IngredientResponse> response = service.list(page, limit);
         log.info("getIngredients :  >>>> finished");
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
