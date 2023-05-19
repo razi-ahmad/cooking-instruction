@@ -90,12 +90,6 @@ public class RecipeController {
     @PutMapping("/{id}")
     public ResponseEntity<RecipeResponse> updateRecipe(@PathVariable(name = "id") Integer id, @Valid @RequestBody RecipeRequest request) {
         log.info("updateRecipe with id{}:  >>>> started", id);
-        try {
-            service.getById(id);
-        } catch (NotFoundException ex) {
-            log.warn("Recipe not found by id: {}", id);
-            return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
-        }
 
         RecipeResponse response = service.update(id, request);
         log.info("updateRecipe: {} >>>> finished", response);

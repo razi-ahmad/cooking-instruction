@@ -88,13 +88,6 @@ public class IngredientController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<IngredientResponse> updateIngredient(@PathVariable(name = "id") Integer id, @Valid @RequestBody IngredientRequest request) {
-        try {
-            service.getById(id);
-        } catch (NotFoundException exception) {
-            log.warn("Ingredient not found by id : {}", id);
-            return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
-        }
-
         log.info("updateIngredient with id{}:  >>>> started", id);
         IngredientResponse response = service.update(id, request);
         log.info("updateIngredient: {} >>>> finished", response);
