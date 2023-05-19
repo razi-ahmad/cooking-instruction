@@ -60,10 +60,7 @@ public class RecipeService implements IRecipeService {
 
     @Override
     public RecipeResponse getById(Integer id) {
-        return map(repository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException("Recipe not found"))
-        );
+        return map(fetchById(id));
     }
 
     public List<RecipeResponse> listFiltered(List<FilterRequest> request, String joinType, int page, int limit) {
